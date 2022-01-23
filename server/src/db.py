@@ -1,6 +1,6 @@
 from sqlmodel import SQLModel, Session, create_engine
-from .settings import settings
-from . import models
+from settings import settings
+from src import models
 
 
 db_url = settings.CONNECTION_STRING

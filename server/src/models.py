@@ -1,6 +1,6 @@
 from typing import List, Optional
 from sqlmodel import Field, Relationship
-from .schemas import RegisterClient, CreatePassword
+from src.schemas import RegisterClient, CreatePassword
 
 
 class Client(RegisterClient, table=True):
