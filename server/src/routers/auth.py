@@ -1,15 +1,20 @@
 from fastapi import APIRouter
+from ..models import Client
+from ..schemas import RegisterClient, LoginClient, ReadClient
+
 
 router = APIRouter(
     tags=["Auth"]
 )
 
 
-@router.post("/register")
-async def register(user_id: int):
-    return user_id
+@router.post("/register", response_model=ReadClient)
+async def register(client: RegisterClient):
+    db_client = Client(**client.dict(), id=1)
+    return db_client
 
 
-@router.post("/login")
-async def login(user_id: int):
-    return user_id
+@router.post("/login", response_model=ReadClient)
+async def login(client: LoginClient):
+    db_client = Client(**client.dict(), id=1)
+    return db_client
