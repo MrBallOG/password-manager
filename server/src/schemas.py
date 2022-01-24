@@ -15,8 +15,12 @@ class LoginClient(SQLModel):
     password: str
 
 
-class RegisterClient(LoginClient):
+class CheckMasterPassword(SQLModel):
     master_password: str
+
+
+class RegisterClient(LoginClient, CheckMasterPassword):
+    pass
 
 
 class CheckPassword(SQLModel):

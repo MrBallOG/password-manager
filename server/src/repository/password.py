@@ -14,6 +14,18 @@ def read_passwords(client_id: int, session: Session) -> List[Password]:
     return passwords
 
 
+def read_password(password_id: int, session: Session) -> Password:
+    check_if_client_exists(password_id, session)
+
+    statement = select(Password).where(Password.id == password_id).limit(1)
+    password = session.exec(statement).first()
+
+    if not password:
+        raise HTTPException(detail="no such password", status_code=404)
+
+    return password
+
+
 def create_password(password: CreatePassword, session: Session) -> Password:
     check_if_client_exists(password.client_id, session)
 

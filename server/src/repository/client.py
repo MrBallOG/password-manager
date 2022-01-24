@@ -12,18 +12,12 @@ def create_client(client: RegisterClient, session: Session) -> Client:
     if get_client_by_email(client.email, session):
         raise HTTPException(detail="email is used", status_code=409)
 
-    passw = client.password.encode()
-    master_passw = client.master_password.encode()
-
-    b64_passw = b64encode(SHA256.new(passw).digest())
-    b64_master_passw = b64encode(SHA256.new(master_passw).digest())
-
-    passw_hash = bcrypt(b64_passw, 12)
-    master_passw_hash = bcrypt(b64_master_passw, 12)
+    passw_hash = hash_password(client.password)
+    master_passw_hash = hash_password(client.master_password)
 
     dict_client = client.dict()
-    dict_client["password"] = passw_hash.decode()
-    dict_client["master_password"] = master_passw_hash.decode()
+    dict_client["password"] = passw_hash
+    dict_client["master_password"] = master_passw_hash
 
     db_client = Client(**dict_client)
     session.add(db_client)
@@ -38,15 +32,27 @@ def read_client(client: LoginClient, session: Session) -> Client:
     if not db_client:
         raise HTTPException(detail="wrong email or password", status_code=404)
 
-    passw = client.password.encode()
+    check_password(client.password, db_client.password)
+
+    return db_client
+
+
+def hash_password(password: str) -> str:
+    passw = password.encode()
+    b64_passw = b64encode(SHA256.new(passw).digest())
+    passw_hash = bcrypt(b64_passw, 15)
+
+    return passw_hash.decode()
+
+
+def check_password(password: str, db_password: str):
+    passw = password.encode()
     b64_passw = b64encode(SHA256.new(passw).digest())
 
     try:
-        bcrypt_check(b64_passw, db_client.password)
+        bcrypt_check(b64_passw, db_password.encode())
     except ValueError:
         raise HTTPException(detail="wrong email or password", status_code=404)
-
-    return db_client
 
 
 def get_client_by_email(email: str, session: Session) -> Client:
