@@ -1,0 +1,12 @@
+.navbar ul {
+    list-style-type: none;
+    position: fixed;
+    top: 1%;
+    right: 1%;
+}
+
+.navbar li {
+    display: inline-block;
+    margin-left: 1em;
+    margin-right: 1em;
+}
