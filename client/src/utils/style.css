@@ -1,3 +1,21 @@
+button {
+    border: transparent;
+    padding: 6px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+a,
+a:visited {
+    color: rgb(84, 115, 219);
+    text-decoration: none;
+    font-weight: bolder;
+    border: solid;
+    padding: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
 .form {
     display: flex;
     justify-content: center;
@@ -9,4 +27,50 @@
 .form label {
     display: block;
     padding: 5px;
+}
+
+.inputs {
+    display: table;
+}
+
+.inputs p {
+    display: table-row;
+    width: 100%;
+}
+
+.inputs label {
+    display: table-cell;
+    padding-right: 10px;
+}
+
+.inputs input {
+    display: table-cell;
+}
+
+.password button {
+    margin-top: 5px;
+    margin-left: 2px;
+    margin-right: 2px;
+    float: right;
+    border: transparent;
+}
+
+.save {
+    background-color: rgb(81, 190, 81);
+}
+
+.delete {
+    background-color: rgb(223, 96, 96);
+}
+
+.simple {
+    width: 75px
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 2%;
 }

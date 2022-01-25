@@ -25,7 +25,9 @@ export function Logout() {
             }
         }
 
+        const ac = new AbortController();
         handleLogout().then(_ => setReady(true))
+        return () => ac.abort();
     }, [dispatch, token.token])
 
 

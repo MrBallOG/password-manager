@@ -1,14 +1,14 @@
 import { PayloadAction } from '@reduxjs/toolkit'
 
-export interface password {
-    id: Number,
+export interface IPassword {
+    id?: Number,
     service: String,
     username: String,
     email: String,
     password: String
 }
 
-export const passwordsReducer = (passwords: Array<password> = [], action: PayloadAction<password>) => {
+export const passwordsReducer = (passwords: Array<IPassword> = [], action: PayloadAction<IPassword>) => {
     switch (action.type) {
         case "SET_PASSWORD":
             let index = passwords.findIndex(p => p.id === action.payload.id);

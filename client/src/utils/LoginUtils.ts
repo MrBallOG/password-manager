@@ -1,24 +1,31 @@
 import { Dispatch } from "react"
-import { setToken } from "../actions/tokenActions"
+import { sentRefreshToken } from "../actions/refreshTokenActions"
+import { setToken, unsetToken } from "../actions/tokenActions"
 
 
-export const checkIfLoggedIn = async (token: string, dispatch: Dispatch<any>, setReady: React.Dispatch<React.SetStateAction<boolean>>) => {
-    if (token !== "" && !checkIfTokenExpired(token)) {
-        setReady(true)
-        return
-    }
+export const checkIfLoggedIn = async (token: string, refreshTokenSent: boolean, dispatch: Dispatch<any>, setReady: React.Dispatch<React.SetStateAction<boolean>>) => {
+    const tokenExists = token !== ""
+    const tokenExpired = checkIfTokenExpired(token)
 
-    const setAccessToken = async () => {
+    if ((tokenExists && tokenExpired) || !refreshTokenSent) {
         const accessToken = await checkIfRefreshAvailable()
+
         if (accessToken !== "") {
             dispatch(setToken(accessToken))
+        } else if (!refreshTokenSent) {
+            dispatch(sentRefreshToken())
+        } else if (tokenExpired) {
+            dispatch(unsetToken())
         }
     }
-    setAccessToken().then(_ => setReady(true))
+    setReady(true)
 }
 
 
 const checkIfTokenExpired = (token: string) => {
+    if (!token)
+        return true
+
     const payload = token.split(".")[1]
 
     const decodedToken = JSON.parse(window.atob(payload))

@@ -6,8 +6,6 @@ import { Register } from './views/Register';
 import { Vault } from './views/Vault';
 import { Logout } from './views/Logout';
 
-
-
 function App() {
 
   return (
