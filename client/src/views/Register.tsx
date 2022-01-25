@@ -3,10 +3,10 @@ import { useForm } from 'react-hook-form';
 import { Navigate } from 'react-router-dom';
 import { NavigationBar } from "../utils/NavigationBar";
 import '../utils/style.css'
-import { checkLoggedIn } from '../utils/checkLoggedIn';
+import { checkIfLoggedIn } from '../utils/checkLoggedIn';
 import { RootState } from '../reducers';
 import { useDispatch, useSelector } from 'react-redux';
-import { setToken } from "../actions/tokenActions";
+
 
 export function Register() {
     const { register, handleSubmit, setError, formState: { errors } } = useForm();
@@ -16,18 +16,10 @@ export function Register() {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        if (token.token !== "") {
-            setReady(true)
-            return
+        const checkLoggedIn = async () => {
+            await checkIfLoggedIn(token.token, dispatch, setReady)
         }
-
-        const setAccessToken = async () => {
-            const accessToken = await checkLoggedIn()
-            if (accessToken !== "") {
-                dispatch(setToken(accessToken))
-            }
-        }
-        setAccessToken().then(_ => setReady(true))
+        checkLoggedIn()
     }, [dispatch, token.token])
 
     const handleRegister = async (data: any) => {
@@ -53,11 +45,13 @@ export function Register() {
         setRedirect(true)
     }
 
-    if (!ready) {
+    if (!ready)
         return (<></>)
-    }
 
-    if (redirect || token.token !== "")
+    if (redirect)
+        return <Navigate to='/login' />
+
+    if (token.token !== "")
         return <Navigate to='/' />
 
     return (

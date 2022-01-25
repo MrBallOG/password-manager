@@ -4,6 +4,7 @@ import { Navigate } from "react-router-dom";
 import { RootState } from "../reducers";
 import { unsetToken } from "../actions/tokenActions";
 
+
 export function Logout() {
     const [ready, setReady] = useState(false)
     const token = useSelector((state: RootState) => state.token)
@@ -28,9 +29,8 @@ export function Logout() {
     }, [dispatch, token.token])
 
 
-    if (!ready) {
+    if (!ready)
         return (<></>)
-    }
 
     return <Navigate to='/' />
 }

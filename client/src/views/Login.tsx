@@ -5,7 +5,8 @@ import { Navigate } from "react-router-dom";
 import { RootState } from "../reducers";
 import { NavigationBar } from "../utils/NavigationBar";
 import { setToken } from "../actions/tokenActions";
-import { checkLoggedIn } from "../utils/checkLoggedIn";
+import { checkIfLoggedIn } from "../utils/checkLoggedIn";
+
 
 export function Login() {
     const { register, handleSubmit, setError, formState: { errors } } = useForm();
@@ -14,18 +15,10 @@ export function Login() {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        if (token.token !== "") {
-            setReady(true)
-            return
+        const checkLoggedIn = async () => {
+            await checkIfLoggedIn(token.token, dispatch, setReady)
         }
-
-        const setAccessToken = async () => {
-            const accessToken = await checkLoggedIn()
-            if (accessToken !== "") {
-                dispatch(setToken(accessToken))
-            }
-        }
-        setAccessToken().then(_ => setReady(true))
+        checkLoggedIn()
     }, [dispatch, token.token])
 
     const handleLogin = async (data: any) => {

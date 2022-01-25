@@ -19,6 +19,7 @@ function App() {
           <Route path="/logout" element={<Logout />} />
           <Route path="/register" element={<Register />} />
           <Route path="/vault" element={<Vault />} />
+          <Route path="*" element={<Home />} />
         </Routes>
       </Router>
     </div>
