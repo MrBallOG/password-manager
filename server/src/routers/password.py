@@ -15,15 +15,14 @@ router = APIRouter(
 )
 
 
-@router.post("/{client_id}", response_model=List[GetOrUpdatePassword])
-async def read_passwords(client_id: int, token: Token, master_password: CheckMasterPassword, session: Session = Depends(get_session)):
+@router.post("/all", response_model=List[GetOrUpdatePassword])
+async def read_passwords(token: Token, master_password: CheckMasterPassword, session: Session = Depends(get_session)):
     email = verify_access_token(token)
     db_client = get_client_by_email(email, session)
 
-    check_if_token_belongs_to_user(client_id, db_client)
     check_if_correct_master_passowrd(master_password, db_client)
 
-    passwords = sr.read_passwords(client_id, session)
+    passwords = sr.read_passwords(db_client.id, session)
     return passwords
 
 
@@ -32,10 +31,9 @@ async def create_password(password: CreatePassword, token: Token, master_passwor
     email = verify_access_token(token)
     db_client = get_client_by_email(email, session)
 
-    check_if_token_belongs_to_user(password.client_id, db_client)
     check_if_correct_master_passowrd(master_password, db_client)
 
-    passw = sr.create_password(password, session)
+    passw = sr.create_password(password, db_client.id, session)
     return passw
 
 
@@ -44,7 +42,6 @@ async def update_password(password: GetOrUpdatePassword, token: Token, master_pa
     email = verify_access_token(token)
     db_client = get_client_by_email(email, session)
 
-    check_if_token_belongs_to_user(password.client_id, db_client)
     check_if_correct_master_passowrd(master_password, db_client)
 
     passw = sr.update_password(password, session)
@@ -55,19 +52,13 @@ async def update_password(password: GetOrUpdatePassword, token: Token, master_pa
 async def delete_password(id: int, token: Token, master_password: CheckMasterPassword, session: Session = Depends(get_session)):
     email = verify_access_token(token)
     db_client = get_client_by_email(email, session)
-    password = sr.read_password(id, session)
 
-    check_if_token_belongs_to_user(password.client_id, db_client)
     check_if_correct_master_passowrd(master_password, db_client)
 
     sr.delete_password(id, session)
 
 
-def check_if_token_belongs_to_user(client_id: int, db_client: Client):
-    if not db_client or db_client.id != client_id:
-        raise HTTPException(
-            detail="wrong user or password", status_code=404)
-
-
 def check_if_correct_master_passowrd(master_password: CheckMasterPassword, db_client: Client):
+    if not db_client:
+        raise HTTPException(detail="wrong email or password", status_code=404)
     check_password(master_password.master_password, db_client.master_password)

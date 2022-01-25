@@ -1,11 +1,11 @@
 import { NavigationBar } from "../utils/NavigationBar";
 
 
-export function Home(props: { logged: any, setLogged: any; }) {
+export function Home() {
 
     return (
         <>
-            <NavigationBar logged={props.logged} />
+            <NavigationBar />
             <h1>Password Manager</h1>
         </>
     )

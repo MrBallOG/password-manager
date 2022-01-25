@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     SECRET_REFRESH: str
     ALGORITHM: str
     TOKEN_DURATION: int
+    ORIGIN: str
 
     class Config:
         env_file = '.env'

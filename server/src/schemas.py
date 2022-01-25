@@ -25,12 +25,10 @@ class RegisterClient(LoginClient, CheckMasterPassword):
 
 class CheckPassword(SQLModel):
     id: int
-    client_id: int
 
 
 class CreatePassword(SQLModel):
     ciphertext: str
-    client_id: int
 
 
 class GetOrUpdatePassword(CreatePassword):

@@ -1,8 +1,10 @@
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { RootState } from "../../reducers";
 import './NavigationBar.css'
 
-export function NavigationBar(props: { logged: any; }) {
-
+export function NavigationBar() {
+    const token = useSelector((state: RootState) => state.token)
     return (
         <>
             <div className="navbar">
@@ -10,7 +12,7 @@ export function NavigationBar(props: { logged: any; }) {
                     <ul>
                         <li><Link to="/">home</Link></li>
                         <li><Link to="/vault">vault</Link></li>
-                        {props.logged
+                        {token.token !== ""
                             ? <li><Link to="/logout">logout</Link></li>
                             : <li><Link to="/login">login</Link></li>
                         }
