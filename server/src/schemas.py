@@ -5,12 +5,12 @@ from sqlmodel import Field
 
 class CheckClient(SQLModel):
     id: int
-    username: str
+    # username: str
     email: str
 
 
 class LoginClient(SQLModel):
-    username: str
+    # username: str
     email: str = Field(sa_column=Column("email", String, unique=True))
     password: str
 

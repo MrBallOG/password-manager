@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { RootState } from "../../reducers";
+import { RootState } from "../reducers";
 import { NavigationBar } from "../utils/NavigationBar";
 import { Navigate } from 'react-router-dom'
 

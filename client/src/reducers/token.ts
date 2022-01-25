@@ -8,10 +8,10 @@ let accessToken = {
 export const tokenReducer = (token = accessToken, action: PayloadAction<string>) => {
     switch (action.type) {
         case "SET_TOKEN":
-            token.token_type = action.payload
+            token.token = action.payload
             return token
         case "UNSET_TOKEN":
-            token.token_type = ""
+            token.token = ""
             return token
         default:
             return token
