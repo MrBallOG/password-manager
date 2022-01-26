@@ -1,8 +1,7 @@
 from typing import Optional
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Response
 from sqlmodel import Session
-from src.models import Client
-from src.schemas import RegisterClient, LoginClient, CheckClient
+from src.schemas import RegisterClient, LoginClient, CheckClient, validate_login_client, validate_register_client
 from src.repository.client import create_client, read_client
 from src.db import get_session
 from src.tokens import Token, verify_refresh_token, create_access_token, create_refresh_token
@@ -15,12 +14,16 @@ router = APIRouter(
 
 @router.post("/register", response_model=CheckClient, status_code=201)
 async def register(client: RegisterClient, session: Session = Depends(get_session)):
+    validate_register_client(client)
+
     db_client = create_client(client, session)
     return db_client
 
 
 @router.post("/login", response_model=Token)
 async def login(client: LoginClient, response: Response, session: Session = Depends(get_session)):
+    validate_login_client(client)
+
     db_client = read_client(client, session)
     refresh_token = create_refresh_token(db_client.email)
     access_token = create_access_token(db_client.email)

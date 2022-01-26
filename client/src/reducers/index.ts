@@ -1,5 +1,5 @@
 import { combineReducers } from "redux";
-import { masterPasswordReducer } from "./masterPassword";
+import { vaultKeyReducer } from "./vaultKey";
 import { passwordsReducer } from "./passwords";
 import { refreshTokenReducer } from "./refreshToken";
 import { tokenReducer } from "./token";
@@ -7,7 +7,7 @@ import { tokenReducer } from "./token";
 export const allReducers = combineReducers({
     token: tokenReducer,
     passwords: passwordsReducer,
-    masterPassword: masterPasswordReducer,
+    vaultKey: vaultKeyReducer,
     refreshToken: refreshTokenReducer
 })
 

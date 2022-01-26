@@ -3,6 +3,9 @@ button {
     padding: 6px;
     padding-left: 20px;
     padding-right: 20px;
+    font-size: 15px;
+    width: 99px;
+    margin-top: 10px;
 }
 
 a,
@@ -14,6 +17,14 @@ a:visited {
     padding: 10px;
     padding-left: 20px;
     padding-right: 20px;
+}
+
+input {
+    width: 300px;
+}
+
+label {
+    font-size: 20px;
 }
 
 .form {
@@ -64,7 +75,7 @@ a:visited {
 }
 
 .simple {
-    width: 75px
+    width: 140px
 }
 
 .container {

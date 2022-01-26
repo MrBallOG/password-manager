@@ -1,19 +1,39 @@
-export const deriveKeyAndGetPasswords = async () => {
+import { decodeTokenPayload } from "./LoginUtils"
+import CryptoJS from 'crypto-js'
 
-    //     x = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 
-    // console.log(x.length)
+export const deriveVaultKey = (token: string, masterPassword: string) => {
+    const salt = generateSaltFromToken(token)
+    const vaultKey = CryptoJS.PBKDF2(masterPassword, salt, { keySize: 256 / 32, iterations: 1000 })
 
-    // email = Array.from(x)
+    return vaultKey.toString()
+}
 
-    // sum = email.reduce((p, n) => (p + n.charCodeAt(0)), 0)
-    // x = 126*254 * 536667 % 5000
+export const deriveAuthKey = (token: string, VaultKey: string) => {
+    return deriveVaultKey(token, VaultKey)
+}
 
-    // y = x.toString()
-    // while (y.lenght !== 4)
-    // 	y = y + "0"
+export const deriveVaultKeyFromEmail = (email: string, masterPassword: string) => {
+    const salt = calculateSalt(email)
+    const vaultKey = CryptoJS.PBKDF2(masterPassword, salt, { keySize: 256 / 32, iterations: 1000 })
 
-    // console.log(y)
+    return vaultKey.toString()
+}
 
-    // console.log(x)
+export const deriveAuthKeyFromEmail = (email: string, VaultKey: string) => {
+    return deriveVaultKeyFromEmail(email, VaultKey)
+}
+
+export const generateSaltFromToken = (token: string) => {
+    const payload = decodeTokenPayload(token)
+    return calculateSalt(payload.sub)
+}
+
+const calculateSalt = (emailString: string) => {
+    const email: Array<String> = Array.from(emailString)
+    const sum = email.reduce((currentSum, nextChar) => (currentSum + nextChar.charCodeAt(0)), 0)
+    let salt = (sum * 536267 % 5129).toString()
+    salt = salt + '0'.repeat(4 - salt.length)
+
+    return salt.repeat(4)
 }

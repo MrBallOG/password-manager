@@ -1,12 +1,13 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
-from src.models import Password, Client
-from src.schemas import GetOrUpdatePassword, CreatePassword, CheckPassword, CheckMasterPassword
+from src.models import Client
+from src.schemas import GetOrUpdatePassword, CreatePassword, CheckPassword, CheckMasterPassword, validate_check_master_password, validate_create_password, validate_get_or_update_password
 from src.db import get_session
 import src.repository.password as sr
 from src.repository.client import get_client_by_email, check_password
 from src.tokens import Token, verify_access_token
+from sys import maxsize
 
 
 router = APIRouter(
@@ -17,6 +18,8 @@ router = APIRouter(
 
 @router.post("/all", response_model=List[GetOrUpdatePassword])
 async def read_passwords(token: Token, master_password: CheckMasterPassword, session: Session = Depends(get_session)):
+    validate_check_master_password(master_password)
+
     email = verify_access_token(token)
     db_client = get_client_by_email(email, session)
 
@@ -28,6 +31,9 @@ async def read_passwords(token: Token, master_password: CheckMasterPassword, ses
 
 @router.post("/", response_model=CheckPassword, status_code=201)
 async def create_password(password: CreatePassword, token: Token, master_password: CheckMasterPassword, session: Session = Depends(get_session)):
+    validate_check_master_password(master_password)
+    validate_create_password(password)
+
     email = verify_access_token(token)
     db_client = get_client_by_email(email, session)
 
@@ -39,6 +45,9 @@ async def create_password(password: CreatePassword, token: Token, master_passwor
 
 @router.put("/", response_model=CheckPassword)
 async def update_password(password: GetOrUpdatePassword, token: Token, master_password: CheckMasterPassword, session: Session = Depends(get_session)):
+    validate_check_master_password(master_password)
+    validate_get_or_update_password(password)
+
     email = verify_access_token(token)
     db_client = get_client_by_email(email, session)
 
@@ -50,6 +59,10 @@ async def update_password(password: GetOrUpdatePassword, token: Token, master_pa
 
 @router.delete("/{id}", status_code=204)
 async def delete_password(id: int, token: Token, master_password: CheckMasterPassword, session: Session = Depends(get_session)):
+    if id < 0 or id >= maxsize:
+        raise HTTPException(detail="wrong email or password", status_code=404)
+    validate_check_master_password(master_password)
+
     email = verify_access_token(token)
     db_client = get_client_by_email(email, session)
 

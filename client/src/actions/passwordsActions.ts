@@ -20,3 +20,9 @@ export const deletePassword = (password: IPassword) => {
         payload: password
     }
 }
+
+export const deletePasswords = () => {
+    return {
+        type: "DELETE_PASSWORDS"
+    }
+}

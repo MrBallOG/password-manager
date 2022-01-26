@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Navigate } from "react-router-dom";
-import { RootState } from "../reducers";
+import { deletePasswords } from "../actions/passwordsActions";
 import { unsetToken } from "../actions/tokenActions";
+import { unsetVaultKey } from "../actions/vaultKeyActions";
 
 
 export function Logout() {
     const [ready, setReady] = useState(false)
-    const token = useSelector((state: RootState) => state.token)
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -20,15 +20,15 @@ export function Logout() {
             const url = process.env.REACT_APP_API_LINK + "auth/logout"
             await fetch(url, init as RequestInit)
 
-            if (token.token !== "") {
-                dispatch(unsetToken())
-            }
+            dispatch(unsetToken())
+            dispatch(unsetVaultKey())
+            dispatch(deletePasswords())
         }
 
         const ac = new AbortController();
         handleLogout().then(_ => setReady(true))
         return () => ac.abort();
-    }, [dispatch, token.token])
+    }, [dispatch])
 
 
     if (!ready)

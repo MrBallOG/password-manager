@@ -39,6 +39,7 @@ export function Login() {
         }
         const url = process.env.REACT_APP_API_LINK + "auth/login"
         const res = await fetch(url, init as RequestInit)
+
         if (res.status === 404) {
             const dict = await res.json()
             setError("email", { message: dict.detail })
@@ -63,7 +64,7 @@ export function Login() {
                 <form onSubmit={handleSubmit(handleLogin)}>
                     {errors.email ? errors.email.message : ""}
                     <label>Email <br />
-                        <input type="email" {...register('email', {
+                        <input type="text" {...register('email', {
                             required: true,
                             pattern: {
                                 value: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
@@ -77,11 +78,11 @@ export function Login() {
                         <input type="password" {...register('password', {
                             required: true,
                             pattern: {
-                                value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/,
+                                value: /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,50}$/,
                                 message: "password must contain A-Z, a-z, 0-9, and special characters"
                             },
                             minLength: { value: 8, message: "password must be at least 8 characters" },
-                            maxLength: { value: 20, message: "password must be max 20 characters" }
+                            maxLength: { value: 50, message: "password must be max 50 characters" }
                         })} />
                     </label>
                     <button>Send</button>

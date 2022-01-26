@@ -1,4 +1,4 @@
-import { Dispatch } from "react"
+import { Dispatch } from "redux"
 import { sentRefreshToken } from "../actions/refreshTokenActions"
 import { setToken, unsetToken } from "../actions/tokenActions"
 
@@ -22,13 +22,18 @@ export const checkIfLoggedIn = async (token: string, refreshTokenSent: boolean, 
 }
 
 
+export const decodeTokenPayload = (token: string) => {
+    const payload = token.split(".")[1]
+
+    return JSON.parse(window.atob(payload))
+}
+
+
 const checkIfTokenExpired = (token: string) => {
     if (!token)
         return true
 
-    const payload = token.split(".")[1]
-
-    const decodedToken = JSON.parse(window.atob(payload))
+    const decodedToken = decodeTokenPayload(token)
 
     if (decodedToken.exp < new Date().getTime() / 1000)
         return true
@@ -37,7 +42,7 @@ const checkIfTokenExpired = (token: string) => {
 }
 
 
-const checkIfRefreshAvailable = async () => {
+export const checkIfRefreshAvailable = async () => {
     const init = {
         method: 'POST',
         mode: 'cors',

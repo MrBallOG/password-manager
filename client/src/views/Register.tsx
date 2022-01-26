@@ -6,6 +6,7 @@ import '../utils/style.css'
 import { checkIfLoggedIn } from '../utils/LoginUtils';
 import { RootState } from '../reducers';
 import { useDispatch, useSelector } from 'react-redux';
+import { deriveAuthKeyFromEmail, deriveVaultKeyFromEmail } from '../utils/masterPasswordUtils';
 
 
 export function Register() {
@@ -26,6 +27,9 @@ export function Register() {
     }, [dispatch, token.token, refreshTokenSent])
 
     const handleRegister = async (data: any) => {
+        const vaultKey = deriveVaultKeyFromEmail(data.email, data.masterPassword)
+        const authKey = deriveAuthKeyFromEmail(data.email, vaultKey)
+
         const init = {
             method: 'POST',
             headers: {
@@ -34,12 +38,13 @@ export function Register() {
             body: JSON.stringify({
                 email: data.email,
                 password: data.password,
-                master_password: data.masterPassword
+                master_password: authKey
             }),
             mode: 'cors'
         }
         const url = process.env.REACT_APP_API_LINK + "auth/register"
         const res = await fetch(url, init as RequestInit)
+
         if (res.status === 409) {
             const dict = await res.json()
             setError("email", { message: dict.detail })
@@ -65,7 +70,7 @@ export function Register() {
                 <form onSubmit={handleSubmit(handleRegister)}>
                     {errors.email ? errors.email.message : ""}
                     <label>Email <br />
-                        <input type="email" {...register('email', {
+                        <input type="text" {...register('email', {
                             required: true,
                             pattern: {
                                 value: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
@@ -79,11 +84,11 @@ export function Register() {
                         <input type="password" {...register('password', {
                             required: true,
                             pattern: {
-                                value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/,
+                                value: /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,50}$/,
                                 message: "password must contain A-Z, a-z, 0-9, and special characters"
                             },
                             minLength: { value: 8, message: "password must be at least 8 characters" },
-                            maxLength: { value: 20, message: "password must be max 20 characters" }
+                            maxLength: { value: 50, message: "password must be max 50 characters" }
                         })} />
                     </label>
                     {errors.masterPassword ? errors.masterPassword.message : ""}
@@ -91,11 +96,11 @@ export function Register() {
                         <input type="password" {...register('masterPassword', {
                             required: true,
                             pattern: {
-                                value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,20}$/,
+                                value: /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{12,50}$/,
                                 message: "password must contain A-Z, a-z, 0-9, and special characters"
                             },
                             minLength: { value: 12, message: "master password must be at least 12 characters" },
-                            maxLength: { value: 20, message: "master password must be max 20 characters" }
+                            maxLength: { value: 50, message: "master password must be max 50 characters" }
                         })} />
                     </label>
                     <button>Send</button>
