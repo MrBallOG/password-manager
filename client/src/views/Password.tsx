@@ -49,15 +49,22 @@ export function Password(password: IPassword) {
                     <div className="inputs">
                         <p>
                             <label>Service</label>
-                            <input type="text" {...register('service', { required: true, value: password.service })} />
+                            <input type="text" {...register('service', { required: true, value: password.service, maxLength: { value: 60, message: "service must be max 60 characters" } })} />
                         </p>
                         <p>
                             <label>Username</label>
-                            <input type="text" {...register('username', { required: true, value: password.username })} />
+                            <input type="text" {...register('username', { required: true, value: password.username, maxLength: { value: 50, message: "username must be max 50 characters" } })} />
                         </p>
                         <p>
                             <label>Email</label>
-                            <input type="email" {...register('email', { required: true, value: password.email })} />
+                            <input type="email" {...register('email', {
+                                required: true,
+                                pattern: {
+                                    value: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                                    message: "invalid email"
+                                },
+                                maxLength: { value: 254, message: "email must be max 254 characters" }
+                            })} />
                         </p>
                         <p>
                             {errors.password ? errors.password.message : ""}

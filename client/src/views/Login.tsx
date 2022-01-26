@@ -63,14 +63,21 @@ export function Login() {
                 <form onSubmit={handleSubmit(handleLogin)}>
                     {errors.email ? errors.email.message : ""}
                     <label>Email <br />
-                        <input type="email" {...register('email', { required: true })} />
+                        <input type="email" {...register('email', {
+                            required: true,
+                            pattern: {
+                                value: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                                message: "invalid email"
+                            },
+                            maxLength: { value: 254, message: "email must be max 254 characters" }
+                        })} />
                     </label>
                     {errors.password ? errors.password.message : ""}
                     <label>Password <br />
                         <input type="password" {...register('password', {
                             required: true,
                             pattern: {
-                                value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d\w\W]{8,20}$/i,
+                                value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/,
                                 message: "password must contain A-Z, a-z, 0-9, and special characters"
                             },
                             minLength: { value: 8, message: "password must be at least 8 characters" },

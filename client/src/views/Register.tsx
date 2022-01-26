@@ -65,7 +65,14 @@ export function Register() {
                 <form onSubmit={handleSubmit(handleRegister)}>
                     {errors.email ? errors.email.message : ""}
                     <label>Email <br />
-                        <input type="email" {...register('email', { required: true })} />
+                        <input type="email" {...register('email', {
+                            required: true,
+                            pattern: {
+                                value: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                                message: "invalid email"
+                            },
+                            maxLength: { value: 254, message: "email must be max 254 characters" }
+                        })} />
                     </label>
                     {errors.password ? errors.password.message : ""}
                     <label>Password <br />
