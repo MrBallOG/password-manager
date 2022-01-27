@@ -45,17 +45,12 @@ label {
 }
 
 .inputs p {
-    display: table-row;
-    width: 100%;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .inputs label {
-    display: table-cell;
     padding-right: 10px;
-}
-
-.inputs input {
-    display: table-cell;
 }
 
 .password button {

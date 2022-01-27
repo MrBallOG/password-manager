@@ -21,9 +21,9 @@ export function Register() {
         const checkLoggedIn = async () => {
             await checkIfLoggedIn(token.token, refreshTokenSent, dispatch, setReady)
         }
-        const ac = new AbortController();
+        const ac = new AbortController()
         checkLoggedIn()
-        return () => ac.abort();
+        return () => ac.abort()
     }, [dispatch, token.token, refreshTokenSent])
 
     const handleRegister = async (data: any) => {
@@ -57,10 +57,10 @@ export function Register() {
         return (<></>)
 
     if (redirect)
-        return <Navigate to='/login' />
+        return <Navigate to="/login" />
 
     if (token.token !== "")
-        return <Navigate to='/' />
+        return <Navigate to="/" />
 
     return (
         <>

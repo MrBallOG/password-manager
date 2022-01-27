@@ -5,6 +5,7 @@ import { Login } from './views/Login';
 import { Register } from './views/Register';
 import { Vault } from './views/Vault';
 import { Logout } from './views/Logout';
+import { AddPassword } from './views/AddPassword';
 
 function App() {
 
@@ -17,6 +18,7 @@ function App() {
           <Route path="/logout" element={<Logout />} />
           <Route path="/register" element={<Register />} />
           <Route path="/vault" element={<Vault />} />
+          <Route path="/vault/add" element={<AddPassword />} />
           <Route path="*" element={<Home />} />
         </Routes>
       </Router>

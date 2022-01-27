@@ -1,10 +1,11 @@
 from typing import Optional
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Response
 from sqlmodel import Session
-from src.schemas import RegisterClient, LoginClient, CheckClient, validate_login_client, validate_register_client
-from src.repository.client import create_client, read_client
+from src.routers.password import check_if_correct_master_passowrd
+from src.schemas import CheckMasterPassword, RegisterClient, LoginClient, CheckClient, validate_check_master_password, validate_login_client, validate_register_client
+from src.repository.client import create_client, get_client_by_email, read_client
 from src.db import get_session
-from src.tokens import Token, verify_refresh_token, create_access_token, create_refresh_token
+from src.tokens import Token, verify_access_token, verify_refresh_token, create_access_token, create_refresh_token
 
 router = APIRouter(
     prefix="/auth",
@@ -33,6 +34,16 @@ async def login(client: LoginClient, response: Response, session: Session = Depe
                         path="/auth")
 
     return access_token
+
+
+@router.post("/master")
+async def master(token: Token, master_password: CheckMasterPassword, session: Session = Depends(get_session)):
+    validate_check_master_password(master_password)
+
+    email = verify_access_token(token)
+    db_client = get_client_by_email(email, session)
+
+    check_if_correct_master_passowrd(master_password, db_client)
 
 
 @router.post("/logout", status_code=204)

@@ -19,9 +19,9 @@ export function Login() {
         const checkLoggedIn = async () => {
             await checkIfLoggedIn(token.token, refreshTokenSent, dispatch, setReady)
         }
-        const ac = new AbortController();
+        const ac = new AbortController()
         checkLoggedIn()
-        return () => ac.abort();
+        return () => ac.abort()
     }, [dispatch, token.token, refreshTokenSent])
 
     const handleLogin = async (data: any) => {
@@ -54,7 +54,7 @@ export function Login() {
     }
 
     if (token.token !== "")
-        return <Navigate to='/' />
+        return <Navigate to="/" />
 
     return (
         <>

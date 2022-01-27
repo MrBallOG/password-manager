@@ -1,23 +1,9 @@
 import { IPassword } from '../reducers/passwords'
 
-export const setPassword = (password: IPassword) => {
+export const addPasswords = (passwords: IPassword[]) => {
     return {
-        type: "SET_PASSWORD",
-        payload: password
-    }
-}
-
-export const addPassword = (password: IPassword) => {
-    return {
-        type: "ADD_PASSWORD",
-        payload: password
-    }
-}
-
-export const deletePassword = (password: IPassword) => {
-    return {
-        type: "DELETE_PASSWORD",
-        payload: password
+        type: "ADD_PASSWORDS",
+        payload: passwords
     }
 }
 

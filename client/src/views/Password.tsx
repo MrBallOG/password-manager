@@ -1,19 +1,22 @@
-import { Dispatch, useState } from "react";
+import { useState } from "react";
+import { Dispatch } from "redux"
 import { useForm } from "react-hook-form";
+import { Navigate } from "react-router-dom";
 import { IPassword } from "../reducers/passwords";
+import { handleAddPassword, handleDeletePassword, handleGetAllPasswords, handleUpdatePassword } from "../utils/passwordsFetchHandlingUtils";
 
 export interface IPasswordProps {
     dispatch: Dispatch<any>
     token: any
     vaultKey: string
     password: IPassword
-    addState: boolean
-    setAddState: React.Dispatch<React.SetStateAction<boolean>>
+    postOnSave: boolean
 }
 
 
 export function Password(props: IPasswordProps) {
-    const { register, handleSubmit, formState: { errors } } = useForm()
+    const { register, handleSubmit, setError, formState: { errors } } = useForm()
+    const [redirect, setRedirect] = useState(false)
     const [inputType, setInputType] = useState("password")
     const [name, setName] = useState("Show")
 
@@ -28,35 +31,57 @@ export function Password(props: IPasswordProps) {
         }
     }
 
-    const handleSave = async (data: any) => {
-        // const init = {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify({
-        //         email: data.email,
-        //         password: data.password
-        //     }),
-        //     mode: 'cors',
-        //     credentials: 'include'
-        // }
-        // const url = process.env.REACT_APP_API_LINK + "auth/login"
-        // const res = await fetch(url, init as RequestInit)
-        // if (res.status === 404) {
-        //     const dict = await res.json()
-        //     setError("email", { message: dict.detail })
-        //     return
-        // }
-        // const dict = await res.json()
-        // dispatch(setToken(dict.token))
+    const compare = (password: IPassword) => {
+        if (password.email !== props.password.email)
+            return false
+        if (password.password !== props.password.password)
+            return false
+        if (password.service !== props.password.service)
+            return false
+        if (password.username !== props.password.username)
+            return false
+        return true
     }
+
+    const handleSave = async (data: any) => {
+        const password: IPassword = {
+            id: props.password.id,
+            service: data.service,
+            username: data.username,
+            email: data.email,
+            password: data.password
+        }
+        if (compare(password)) {
+            setError("service", { message: "change any field before saving" })
+            return
+        }
+        if (props.postOnSave) {
+            await handleAddPassword(password, props.token, props.vaultKey, props.dispatch)
+            setRedirect(true)
+        } else {
+            await handleUpdatePassword(password, props.token, props.vaultKey, props.dispatch)
+            await handleGetAllPasswords(props.token, props.vaultKey, props.dispatch)
+        }
+    }
+
+    const handleDelete = async () => {
+        if (props.postOnSave) {
+            setRedirect(true)
+        } else {
+            await handleDeletePassword(props.password.id as number, props.token, props.vaultKey, props.dispatch)
+            await handleGetAllPasswords(props.token, props.vaultKey, props.dispatch)
+        }
+    }
+
+    if (redirect)
+        return <Navigate to="/vault" />
 
     return (
         <>
             <div className="container">
                 <div className="password">
                     <div className="inputs">
+                        {errors.service ? errors.service.message : ""}
                         <p>
                             <label>Service</label>
                             <input type="text" {...register('service', {
@@ -65,6 +90,7 @@ export function Password(props: IPasswordProps) {
                                 maxLength: { value: 60, message: "service must be max 60 characters" }
                             })} />
                         </p>
+                        {errors.username ? errors.username.message : ""}
                         <p>
                             <label>Username</label>
                             <input type="text" {...register('username', {
@@ -73,10 +99,12 @@ export function Password(props: IPasswordProps) {
                                 maxLength: { value: 50, message: "username must be max 50 characters" }
                             })} />
                         </p>
+                        {errors.email ? errors.email.message : ""}
                         <p>
                             <label>Email</label>
                             <input type="text" {...register('email', {
                                 required: true,
+                                value: props.password.email,
                                 pattern: {
                                     value: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
                                     message: "invalid email"
@@ -84,8 +112,8 @@ export function Password(props: IPasswordProps) {
                                 maxLength: { value: 254, message: "email must be max 254 characters" }
                             })} />
                         </p>
+                        {errors.password ? errors.password.message : ""}
                         <p>
-                            {errors.password ? errors.password.message : ""}
                             <label>Password</label>
                             <input type={inputType} {...register('password', {
                                 required: true,
@@ -99,8 +127,8 @@ export function Password(props: IPasswordProps) {
                             })} />
                         </p>
                     </div>
-                    <button className="save" onClick={handleSubmit(handleSave)}>Save</button>
-                    <button className="delete">Delete</button>
+                    <button className="save" onClick={handleSubmit(handleSave)}>{props.postOnSave ? "Create" : "Save"}</button>
+                    <button className="delete" onClick={handleDelete}>{props.postOnSave ? "Abort" : "Delete"}</button>
                     <button onClick={handleInputType}>{name}</button>
                 </div>
             </div>

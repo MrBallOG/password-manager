@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { checkIfLoggedIn } from "../utils/LoginUtils";
 import { IPasswordProps, Password } from "./Password";
 import { IMasterLoginProps, MasterLogin } from "./MasterLogin";
+import { handleGetAllPasswords } from "../utils/passwordsFetchHandlingUtils";
 
 
 export function Vault() {
@@ -20,18 +21,21 @@ export function Vault() {
     useEffect(() => {
         const checkLoggedIn = async () => {
             await checkIfLoggedIn(token.token, refreshTokenSent, dispatch, setReady)
+            if (vaultKey !== "") {
+                await handleGetAllPasswords(token, vaultKey, dispatch)
+            }
         }
-        const ac = new AbortController();
+        const ac = new AbortController()
         checkLoggedIn()
-        return () => ac.abort();
-    }, [dispatch, token.token, refreshTokenSent])
+        return () => ac.abort()
+    }, [dispatch, token.token, refreshTokenSent, token, vaultKey])
 
     if (!ready) {
         return (<></>)
     }
 
     if (token.token === "")
-        return <Navigate to='/login' />
+        return <Navigate to="/login" />
 
     if (vaultKey === "") {
         const props: IMasterLoginProps = {
@@ -42,42 +46,24 @@ export function Vault() {
     }
 
     if (addState) {
-        const props: IPasswordProps = {
-            dispatch: dispatch,
-            token: token,
-            vaultKey: vaultKey,
-            password: { id: undefined, password: "", email: "", service: "", username: "" },
-            addState: addState,
-            setAddState: setAddState
-        }
-        return (
-            <>
-                <NavigationBar />
-                <div style={{ marginTop: 200 }}>
-                    <h2>Add Password</h2>
-                    <Password {...props} />
-                </div>
-            </>
-        )
+        return <Navigate to="/vault/add" />
     }
-
 
     return (
         <>
             <NavigationBar />
             <h1>Passwords</h1>
             <button className="simple" onClick={() => setAddState(true)}>Add Password</button>
-            {passwords.map((password, index) => {
-                const props: IPasswordProps = {
+            {passwords.map((password) => {
+                let props: IPasswordProps = {
                     dispatch: dispatch,
                     token: token,
                     vaultKey: vaultKey,
                     password: password,
-                    addState: addState,
-                    setAddState: setAddState
+                    postOnSave: false
                 }
 
-                return <Password key={index} {...props} />
+                return <Password key={password.id as number} {...props} />
             })}
         </>
     )
