@@ -1,0 +1,33 @@
+version: "3.6"
+
+services:
+  client:
+    build: client/
+    ports:
+      - 443:443
+    depends_on:
+      - server
+    container_name: client
+  server:
+    build: server/
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    container_name: server
+  db:
+    image: postgres:14.1-alpine
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    container_name: db
+
+volumes:
+  postgres_data:

@@ -234,3 +234,7 @@ dist
 .tern-port
 
 todo/
+
+*localhost*
+*.pass
+*.env*
