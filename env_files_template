@@ -1,0 +1,33 @@
+# all files should be called .env
+
+# in /
+DB_PASSWORD=some_password
+DB_USER=some_user
+DB_NAME=some_name
+
+# in /client
+REACT_APP_API_LINK=http://localhost:8000/
+# for dev
+BROWSER=none
+
+# in /server
+DB_PASSWORD=some_password
+DB_USER=some_user
+DB_NAME=some_name
+# for dev
+# DB_HOST=localhost 
+# for prod
+DB_HOST=db
+DB_PORT=5432
+CONNECTION_STRING=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+
+SECRET_ACCESS=some_secret
+SECRET_REFRESH=some_secret
+
+ALGORITHM=some_jwt_alg_for_signing
+TOKEN_DURATION=duration_in_minutes
+
+# for dev
+# ORIGIN=http://localhost:3000
+# for prod
+ORIGIN=https://localhost:443

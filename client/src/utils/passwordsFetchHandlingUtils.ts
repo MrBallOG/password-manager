@@ -30,7 +30,6 @@ export const handleGetAllPasswords = async (token: any, vaultKey: string, dispat
         let ciphertext = cipherObject.ciphertext
         let password = decryptPassword(id, ciphertext, token.token, vaultKey)
         passwords.unshift(password)
-        console.log(password)
     })
     dispatch(addPasswords(passwords))
 }
