@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Dispatch } from "redux"
 import { useForm } from "react-hook-form";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { IPassword } from "../reducers/passwords";
 import { handleAddPassword, handleDeletePassword, handleGetAllPasswords, handleUpdatePassword } from "../utils/passwordsFetchHandlingUtils";
 
@@ -16,7 +16,7 @@ export interface IPasswordProps {
 
 export function Password(props: IPasswordProps) {
     const { register, handleSubmit, setError, formState: { errors } } = useForm()
-    const [redirect, setRedirect] = useState(false)
+    const navigate = useNavigate()
     const [inputType, setInputType] = useState("password")
     const [name, setName] = useState("Show")
 
@@ -57,7 +57,7 @@ export function Password(props: IPasswordProps) {
         }
         if (props.postOnSave) {
             await handleAddPassword(password, props.token, props.vaultKey, props.dispatch)
-            setRedirect(true)
+            navigate("/vault")
         } else {
             await handleUpdatePassword(password, props.token, props.vaultKey, props.dispatch)
             await handleGetAllPasswords(props.token, props.vaultKey, props.dispatch)
@@ -66,15 +66,13 @@ export function Password(props: IPasswordProps) {
 
     const handleDelete = async () => {
         if (props.postOnSave) {
-            setRedirect(true)
+            navigate("/vault")
         } else {
             await handleDeletePassword(props.password.id as number, props.token, props.vaultKey, props.dispatch)
             await handleGetAllPasswords(props.token, props.vaultKey, props.dispatch)
         }
     }
 
-    if (redirect)
-        return <Navigate to="/vault" />
 
     return (
         <>

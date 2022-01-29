@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { NavigationBar } from "../utils/NavigationBar";
 import '../utils/style.css'
 import { checkIfLoggedIn } from '../utils/LoginUtils';
@@ -11,7 +11,7 @@ import { deriveAuthKeyFromEmail, deriveVaultKeyFromEmail } from '../utils/master
 
 export function Register() {
     const { register, handleSubmit, setError, formState: { errors } } = useForm();
-    const [redirect, setRedirect] = useState(false)
+    const navigate = useNavigate()
     const [ready, setReady] = useState(false)
     const token = useSelector((state: RootState) => state.token)
     const refreshTokenSent = useSelector((state: RootState) => state.refreshToken)
@@ -50,14 +50,11 @@ export function Register() {
             setError("email", { message: dict.detail })
             return
         }
-        setRedirect(true)
+        navigate("/login")
     }
 
     if (!ready)
         return (<></>)
-
-    if (redirect)
-        return <Navigate to="/login" />
 
     if (token.token !== "")
         return <Navigate to="/" />
