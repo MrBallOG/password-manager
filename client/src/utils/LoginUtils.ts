@@ -1,24 +1,27 @@
 import { Dispatch } from "redux"
 import { sentRefreshToken } from "../actions/refreshTokenActions"
-import { setToken, unsetToken } from "../actions/tokenActions"
+import { setToken } from "../actions/tokenActions"
+import { clearAll } from "./passwordsFetchHandlingUtils"
 
 
-export const checkIfLoggedIn = async (token: string, refreshTokenSent: boolean, dispatch: Dispatch<any>, setReady?: React.Dispatch<React.SetStateAction<boolean>>) => {
+export const checkIfLoggedIn = async (token: string, refreshTokenSent: boolean, dispatch: Dispatch<any>, setReady: React.Dispatch<React.SetStateAction<boolean>>) => {
     const tokenExists = token !== ""
     const tokenExpired = checkIfTokenExpired(token)
 
     if ((tokenExists && tokenExpired) || !refreshTokenSent) {
         const accessToken = await checkIfRefreshAvailable()
 
+        if (!refreshTokenSent) {
+            dispatch(sentRefreshToken())
+        }
+
         if (accessToken !== "") {
             dispatch(setToken(accessToken))
-        } else if (!refreshTokenSent) {
-            dispatch(sentRefreshToken())
-        } else if (tokenExpired) {
-            dispatch(unsetToken())
+        } else {
+            clearAll(dispatch)
         }
     }
-    setReady && setReady(true)
+    setReady(true)
 }
 
 

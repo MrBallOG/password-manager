@@ -1,3 +1,4 @@
+import datetime
 from typing import Optional
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Response
 from sqlmodel import Session
@@ -6,6 +7,7 @@ from src.schemas import CheckMasterPassword, RegisterClient, LoginClient, CheckC
 from src.repository.client import create_client, get_client_by_email, read_client
 from src.db import get_session
 from src.tokens import Token, verify_access_token, verify_refresh_token, create_access_token, create_refresh_token
+from settings import settings
 
 router = APIRouter(
     prefix="/auth",
@@ -28,10 +30,12 @@ async def login(client: LoginClient, response: Response, session: Session = Depe
     db_client = read_client(client, session)
     refresh_token = create_refresh_token(db_client.email)
     access_token = create_access_token(db_client.email)
+    duration = settings.TOKEN_DURATION * 64
     response.set_cookie(key=refresh_token.token_type,
                         value=refresh_token.token,
                         httponly=True,
-                        path="/auth")
+                        path="/auth",
+                        expires=datetime.utcnow() + datetime.timedelta(minutes=duration))
 
     return access_token
 

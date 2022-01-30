@@ -115,7 +115,7 @@ const redirectOnError = async (res: Response, dispatch: Dispatch<any>) => {
 }
 
 
-const clearAll = (dispatch: Dispatch<any>) => {
+export const clearAll = (dispatch: Dispatch<any>) => {
     dispatch(sentRefreshToken())
     dispatch(unsetToken())
     dispatch(unsetVaultKey())

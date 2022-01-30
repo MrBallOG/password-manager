@@ -1,10 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { deletePasswords } from "../actions/passwordsActions";
-import { sentRefreshToken } from "../actions/refreshTokenActions";
-import { unsetToken } from "../actions/tokenActions";
-import { unsetVaultKey } from "../actions/vaultKeyActions";
+import { clearAll } from "../utils/passwordsFetchHandlingUtils";
 
 
 export function Logout() {
@@ -21,11 +18,7 @@ export function Logout() {
             }
             const url = process.env.REACT_APP_API_LINK + "auth/logout"
             await fetch(url, init as RequestInit)
-
-            dispatch(sentRefreshToken())
-            dispatch(unsetToken())
-            dispatch(unsetVaultKey())
-            dispatch(deletePasswords())
+            clearAll(dispatch)
         }
 
         const ac = new AbortController()
