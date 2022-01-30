@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Response
 from sqlmodel import Session
@@ -35,7 +35,7 @@ async def login(client: LoginClient, response: Response, session: Session = Depe
                         value=refresh_token.token,
                         httponly=True,
                         path="/auth",
-                        expires=datetime.utcnow() + datetime.timedelta(minutes=duration))
+                        expires=datetime.utcnow() + timedelta(minutes=duration))
 
     return access_token
 
