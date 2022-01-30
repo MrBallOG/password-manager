@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { IPassword } from "../reducers/passwords";
 import { handleAddPassword, handleDeletePassword, handleGetAllPasswords, handleUpdatePassword } from "../utils/passwordsFetchHandlingUtils";
+import { setLoading, unsetLoading } from "../actions/loadingActions";
 
 export interface IPasswordProps {
     dispatch: Dispatch<any>
@@ -60,8 +61,10 @@ export function Password(props: IPasswordProps) {
             await handleAddPassword(password, props.token, props.vaultKey, props.dispatch)
             navigate("/vault")
         } else {
+            props.dispatch(setLoading())
             await handleUpdatePassword(password, props.token, props.vaultKey, props.dispatch)
             await handleGetAllPasswords(props.token, props.vaultKey, props.dispatch)
+            props.dispatch(unsetLoading())
         }
     }
 
@@ -69,8 +72,10 @@ export function Password(props: IPasswordProps) {
         if (props.postOnSave) {
             navigate("/vault")
         } else {
+            props.dispatch(setLoading())
             await handleDeletePassword(props.password.id as number, props.token, props.vaultKey, props.dispatch)
             await handleGetAllPasswords(props.token, props.vaultKey, props.dispatch)
+            props.dispatch(unsetLoading())
         }
     }
 

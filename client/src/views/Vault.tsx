@@ -2,10 +2,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../reducers";
 import { NavigationBar } from "../utils/NavigationBar";
 import { Navigate, useNavigate } from 'react-router-dom'
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { IPasswordProps, Password } from "./Password";
 import { IMasterLoginProps, MasterLogin } from "./MasterLogin";
 import { handleGetAllPasswords } from "../utils/passwordsFetchHandlingUtils";
+import { Loading } from "./Loading";
 
 
 export function Vault() {
@@ -13,6 +14,8 @@ export function Vault() {
     const token = useSelector((state: RootState) => state.token)
     const vaultKey = useSelector((state: RootState) => state.vaultKey)
     const passwords = useSelector((state: RootState) => state.passwords)
+    const loading = useSelector((state: RootState) => state.loading)
+    const [localLoading, setLocalLoading] = useState(true)
     const dispatch = useDispatch()
 
 
@@ -22,10 +25,10 @@ export function Vault() {
                 await handleGetAllPasswords(token, vaultKey, dispatch)
             }
             const ac = new AbortController()
-            getPasswords()
+            getPasswords().then(_ => setLocalLoading(false))
             return () => ac.abort()
         }
-    }, [dispatch, navigate, token, vaultKey])
+    }, [dispatch, token, vaultKey])
 
     if (token.token === "")
         return <Navigate to="/login" />
@@ -37,6 +40,9 @@ export function Vault() {
         }
         return <MasterLogin {...props} />
     }
+
+    if (localLoading || loading)
+        return <Loading />
 
     return (
         <>

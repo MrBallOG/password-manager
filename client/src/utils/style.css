@@ -80,3 +80,35 @@ label {
     flex-direction: column;
     margin-top: 2%;
 }
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+    flex-direction: column;
+}
+
+.center h1 {
+    font-size: 60px;
+}
+
+.center h2 {
+    font-size: 40px;
+    animation: fadeInOut 1s ease-in-out infinite;
+}
+
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
