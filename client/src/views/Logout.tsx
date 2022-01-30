@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { deletePasswords } from "../actions/passwordsActions";
 import { sentRefreshToken } from "../actions/refreshTokenActions";
 import { unsetToken } from "../actions/tokenActions";
@@ -8,8 +8,9 @@ import { unsetVaultKey } from "../actions/vaultKeyActions";
 
 
 export function Logout() {
-    const [ready, setReady] = useState(false)
+    const navigate = useNavigate()
     const dispatch = useDispatch()
+
 
     useEffect(() => {
         const handleLogout = async () => {
@@ -28,13 +29,9 @@ export function Logout() {
         }
 
         const ac = new AbortController()
-        handleLogout().then(_ => setReady(true))
+        handleLogout().then(_ => navigate("/"))
         return () => ac.abort()
-    }, [dispatch])
+    }, [dispatch, navigate])
 
-
-    if (!ready)
-        return (<></>)
-
-    return <Navigate to='/' />
+    return (<></>)
 }

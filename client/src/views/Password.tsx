@@ -20,6 +20,7 @@ export function Password(props: IPasswordProps) {
     const [inputType, setInputType] = useState("password")
     const [name, setName] = useState("Show")
 
+
     const handleInputType = () => {
         if (inputType === "password") {
             setInputType("text")

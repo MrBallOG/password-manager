@@ -3,7 +3,7 @@ import { sentRefreshToken } from "../actions/refreshTokenActions"
 import { setToken, unsetToken } from "../actions/tokenActions"
 
 
-export const checkIfLoggedIn = async (token: string, refreshTokenSent: boolean, dispatch: Dispatch<any>, setReady: React.Dispatch<React.SetStateAction<boolean>>) => {
+export const checkIfLoggedIn = async (token: string, refreshTokenSent: boolean, dispatch: Dispatch<any>, setReady?: React.Dispatch<React.SetStateAction<boolean>>) => {
     const tokenExists = token !== ""
     const tokenExpired = checkIfTokenExpired(token)
 
@@ -18,7 +18,7 @@ export const checkIfLoggedIn = async (token: string, refreshTokenSent: boolean, 
             dispatch(unsetToken())
         }
     }
-    setReady(true)
+    setReady && setReady(true)
 }
 
 
@@ -30,7 +30,7 @@ export const decodeTokenPayload = (token: string) => {
 
 
 const checkIfTokenExpired = (token: string) => {
-    if (!token)
+    if (!token || token === "")
         return true
 
     const decodedToken = decodeTokenPayload(token)

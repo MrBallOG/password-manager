@@ -6,8 +6,29 @@ import { Register } from './views/Register';
 import { Vault } from './views/Vault';
 import { Logout } from './views/Logout';
 import { AddPassword } from './views/AddPassword';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from './reducers';
+import { useEffect, useState } from 'react';
+import { checkIfLoggedIn } from './utils/LoginUtils';
 
 function App() {
+  const [ready, setReady] = useState(false)
+  const token = useSelector((state: RootState) => state.token)
+  const refreshTokenSent = useSelector((state: RootState) => state.refreshToken)
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    const checkLoggedIn = async () => {
+      await checkIfLoggedIn(token.token, refreshTokenSent, dispatch, setReady)
+    }
+    const ac = new AbortController()
+    checkLoggedIn()
+    return () => ac.abort()
+  }, [dispatch, token.token, refreshTokenSent])
+
+  if (!ready) {
+    return (<></>)
+  }
 
   return (
     <div className="App">

@@ -1,30 +1,17 @@
-import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { NavigationBar } from "../utils/NavigationBar";
 import '../utils/style.css'
-import { checkIfLoggedIn } from '../utils/LoginUtils';
 import { RootState } from '../reducers';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { deriveAuthKeyFromEmail, deriveVaultKeyFromEmail } from '../utils/masterPasswordUtils';
 
 
 export function Register() {
     const { register, handleSubmit, setError, formState: { errors } } = useForm();
     const navigate = useNavigate()
-    const [ready, setReady] = useState(false)
     const token = useSelector((state: RootState) => state.token)
-    const refreshTokenSent = useSelector((state: RootState) => state.refreshToken)
-    const dispatch = useDispatch()
 
-    useEffect(() => {
-        const checkLoggedIn = async () => {
-            await checkIfLoggedIn(token.token, refreshTokenSent, dispatch, setReady)
-        }
-        const ac = new AbortController()
-        checkLoggedIn()
-        return () => ac.abort()
-    }, [dispatch, token.token, refreshTokenSent])
 
     const handleRegister = async (data: any) => {
         const vaultKey = deriveVaultKeyFromEmail(data.email, data.masterPassword)
@@ -52,9 +39,6 @@ export function Register() {
         }
         navigate("/login")
     }
-
-    if (!ready)
-        return (<></>)
 
     if (token.token !== "")
         return <Navigate to="/" />

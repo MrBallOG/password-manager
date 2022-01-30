@@ -1,11 +1,14 @@
+import { FieldValues, UseFormSetError } from "react-hook-form"
 import { Dispatch } from "redux"
-import { addPasswords } from "../actions/passwordsActions"
+import { addPasswords, deletePasswords } from "../actions/passwordsActions"
+import { sentRefreshToken } from "../actions/refreshTokenActions"
 import { setToken, unsetToken } from "../actions/tokenActions"
+import { setVaultKey, unsetVaultKey } from "../actions/vaultKeyActions"
 import { IPassword } from "../reducers/passwords"
 import { checkIfRefreshAvailable } from "./LoginUtils"
 import { deriveAuthKey } from "./masterPasswordUtils"
 import { decryptPassword, encryptPassword } from "./passwordsEncryptionUtils"
-import { addPasswordFetch, deletePasswordFetch, getAllPasswordsFetch, updatePasswordFetch } from "./passwordsFetchUtils"
+import { addPasswordFetch, deletePasswordFetch, getAllPasswordsFetch, masterPasswordFetch, updatePasswordFetch } from "./passwordsFetchUtils"
 
 
 export const handleGetAllPasswords = async (token: any, vaultKey: string, dispatch: Dispatch<any>) => {
@@ -76,17 +79,45 @@ export const handleDeletePassword = async (id: number, token: any, vaultKey: str
 }
 
 
+export const handleMasterPassword = async (token: any, vaultKey: string, dispatch: Dispatch<any>, setError: UseFormSetError<FieldValues>) => {
+    const authKey = deriveAuthKey(token.token, vaultKey)
+    let res = await masterPasswordFetch(token, authKey)
+
+    if (res.status === 401) {
+        if (await redirectOnError(res, dispatch))
+            return
+
+        res = await masterPasswordFetch(token, authKey)
+    }
+
+    if (res.status !== 200) {
+        setError("masterPassword", { message: "incorrect password" })
+        return
+    }
+
+    dispatch(setVaultKey(vaultKey))
+}
+
+
 const redirectOnError = async (res: Response, dispatch: Dispatch<any>) => {
     const dict = await res.json()
     if (dict.detail === "invalid token") {
-        dispatch(unsetToken())
+        clearAll(dispatch)
         return true
     }
     const newToken = await checkIfRefreshAvailable()
     if (newToken === "") {
-        dispatch(unsetToken())
+        clearAll(dispatch)
         return true
     }
     dispatch(setToken(newToken))
     return false
+}
+
+
+const clearAll = (dispatch: Dispatch<any>) => {
+    dispatch(sentRefreshToken())
+    dispatch(unsetToken())
+    dispatch(unsetVaultKey())
+    dispatch(deletePasswords())
 }
