@@ -31,11 +31,14 @@ async def login(client: LoginClient, response: Response, session: Session = Depe
     refresh_token = create_refresh_token(db_client.email)
     access_token = create_access_token(db_client.email)
     duration = settings.TOKEN_DURATION * 64
+    expires = datetime.utcnow() + timedelta(minutes=duration)
     response.set_cookie(key=refresh_token.token_type,
                         value=refresh_token.token,
                         httponly=True,
+                        secure=True,
+                        samesite="None",
                         path="/auth",
-                        expires=datetime.utcnow() + timedelta(minutes=duration))
+                        expires=expires.strftime("%a, %d %b %Y %H:%M:%S GMT"))
 
     return access_token
 
@@ -55,6 +58,8 @@ async def logout(response: Response):
     response.set_cookie(key="refresh_token",
                         value="",
                         httponly=True,
+                        secure=True,
+                        samesite="None",
                         path="/auth",
                         expires="Thu, 01 Jan 1970 00:00:01 GMT")
 
